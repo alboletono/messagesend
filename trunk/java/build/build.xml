@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<project name="JMessageSend" default="compile" basedir="..">
+
+
+	<path id="classpath">
+		<pathelement path="bin" />
+		<pathelement path="conf" />
+		<fileset dir="lib/">
+			<include name="*.jar" />
+		</fileset>
+		<fileset dir="lib/ext">
+			<include name="*.jar" />
+		</fileset>
+	</path>
+
+	<target name="buildJar" depends="compile" description="Building archive">
+		<echo>Building archive...</echo>
+		<mkdir dir="jar" />
+		<jar destfile="jar/jmessagesend.jar" manifest="build/MANIFEST.MF">
+			<fileset dir="bin">
+				<include name="**/*.class" />
+			</fileset>
+			<fileset dir="build">
+				<include name="META-INF/*" />
+			</fileset>
+		</jar>
+	</target>
+
+	<target name="compile">
+		<echo message="Compiling the java source files..." />
+		<mkdir dir="bin" />
+		<javac destdir="bin" debug="on">
+			<src path="src" />
+			<src path="tests" />
+			<classpath refid="classpath" />
+		</javac>
+	</target>
+
+	<target name="createRelease" depends="buildJar" description="Creates the full realease under release directory">
+		<echo>Creating release...</echo>
+		<deltree dir="release" />
+		<mkdir dir="release" />
+		<copydir dest="release/conf" src="conf">
+		</copydir>
+		<copydir dest="release/images" src="images">
+		</copydir>
+		<copydir dest="release/lib" src="lib">
+		</copydir>
+		<copyfile dest="release/jmessagesend.jar" src="jar/jmessagesend.jar" />
+		<copyfile dest="release/netsend.exe" src="c/anonymous/netsend.exe" />
+	</target>
+
+	<tstamp>
+		<format property="timestamp" pattern="yyyy_MM_dd_HH_mm" />
+	</tstamp>
+  <target name="cleanTempFiles" description="Cleans logs and other stuffs...">
+      <delete file="log/*"/>
+  </target>
+	<target depends="cleanTempFiles" name="archive" description="archive the data into a zip">
+		<zip compress="true" basedir="." destfile="../jmessage_send_${timestamp}.zip" />
+	</target>
+</project>
